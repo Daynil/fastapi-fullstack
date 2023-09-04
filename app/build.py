@@ -39,4 +39,5 @@ def start(clean=False):
 
 
 if __name__ == "__main__":
-    start(clean=True)
+    # start(clean=True)
+    introspect_pocketbase()

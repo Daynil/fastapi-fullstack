@@ -126,6 +126,7 @@ ff-env
 
 # Pocketbase
 app/pocketbase/pb_data
+app/pocketbase/generated_types.py
+# We'll keep these to simplify since we aren't building them anymore
 # Built files (pocketbase/pocketbase is the linux build)
-app/pocketbase.exe
-app/pocketbase/pocketbase
+#app/pocketbase/pocketbase
