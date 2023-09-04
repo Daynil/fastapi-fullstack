@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    <title>Books</title>
+{% endblock title %}
+
+{% block content %}
+    <h1>Books</h1>
+    <main>
+        {% include "books/book_list.html" %}
+    </main>
+{% endblock content %}
