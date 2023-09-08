@@ -47,8 +47,8 @@ async def books(
     )
 
 
-@app_router.post("/books/{book_id}")
-async def add_book(request: RequestAuthed, book_id: str):
+@app_router.patch("/books/{book_id}")
+async def grab_book(request: RequestAuthed, book_id: str):
     try:
         _ = PocketbaseAPI.send_request(
             "PATCH",
@@ -105,6 +105,26 @@ async def delete_book(request: RequestAuthed, book_id: str):
                 book for book in all_books["items"] if book["user"] == request.user.id
             ],
         },
+    )
+
+
+@app_router.post("/books")
+async def add_book(
+    request: RequestAuthed,
+    title: Annotated[str, Form()],
+    author: Annotated[str, Form()],
+):
+    new_book = PocketbaseAPI.send_request(
+        "POST",
+        f"/collections/books/records/",
+        headers={"Authorization": request.user.token},
+        json={"title": title, "author": author, "user": request.user.id},
+    ).data
+
+    return page_response(
+        "books/book.html",
+        request,
+        context={"book": new_book},
     )
 
 

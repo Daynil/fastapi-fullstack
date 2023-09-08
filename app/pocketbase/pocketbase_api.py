@@ -1,11 +1,11 @@
 import json
-import sqlite3
 
 from app.config import app_path
+from app.pocketbase.db import Sqlite
 from app.util.client import ApiClient
 
 PocketbaseAPI = ApiClient("http://127.0.0.1:8090/api")
-
+pb_db = Sqlite(app_path / "pocketbase" / "pb_data" / "data.db")
 
 type_map = {
     "text": "str",
@@ -32,9 +32,7 @@ class AuthSystemFields(BaseSystemFields, BaseModel):
 
 
 def introspect_pocketbase_types():
-    con = sqlite3.connect(app_path / "pocketbase" / "pb_data" / "data.db")
-    cur = con.cursor()
-    res = cur.execute("select type, name, schema from _collections")
+    res = pb_db.execute("select type, name, schema from _collections")
 
     gen_type_str = f"from pydantic import BaseModel\n\n\n{base_system_fields}\n\n\n"
     for collection_type, name, schema in res.fetchall():

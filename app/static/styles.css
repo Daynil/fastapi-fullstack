@@ -148,7 +148,32 @@ article, main a:hover {
     background-color: var(--slate-200);
 }
 
-.auth-form label {
+.add-book-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 50px;
+    max-width: 400px;
+}
+
+.add-book-inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-book-form input {
+    margin-right: 10px
+}
+
+.add-book-form button {
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
     font-size: 14px;
     font-weight: 600;
     color: var(--slate-700);
