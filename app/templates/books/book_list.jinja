@@ -1,0 +1,14 @@
+<div class="books" id="books">
+    <h3>Find Books</h3>
+    <div>
+        {% for book in books %}
+            {% include 'books/book.jinja' %}
+        {% endfor %}
+    </div>
+    <h3 style="margin-top: 20px;">Here are your books</h3>
+    <div id="user-books">
+        {% for book in user_books %}
+            {% include 'books/book.jinja' %}
+        {% endfor %}
+    </div>
+</div>

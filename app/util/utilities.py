@@ -1,4 +1,7 @@
-class CColors:
+from enum import StrEnum
+
+
+class CColors(StrEnum):
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"

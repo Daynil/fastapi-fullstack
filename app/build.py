@@ -1,12 +1,12 @@
 from os import makedirs
-from shutil import copytree, rmtree, ignore_patterns
+from shutil import copytree, ignore_patterns, rmtree
 
 from app.config import (
-    templates,
-    to_generate_path,
     generated_path,
     main_menu,
     static_path,
+    templates,
+    to_generate_path,
 )
 
 
@@ -29,8 +29,8 @@ def start(clean=False):
         ignore=None if clean else ignore_patterns("lib/*"),
     )
 
-    for path in to_generate_path.rglob("*.html"):
-        with generated_path.joinpath(path.name).open("w", encoding="utf-8") as f:
+    for path in to_generate_path.rglob("*.jinja"):
+        with (generated_path / f"{path.stem}.html").open("w", encoding="utf-8") as f:
             f.write(
                 templates.get_template(f"to_pregenerate/{path.name}").render(
                     main_menu=main_menu
@@ -40,4 +40,5 @@ def start(clean=False):
 
 if __name__ == "__main__":
     # start(clean=True)
-    introspect_pocketbase()
+    # introspect_pocketbase()
+    pass

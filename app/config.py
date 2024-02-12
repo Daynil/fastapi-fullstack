@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from jinja2 import Environment, FileSystemLoader
 from starlette.templating import Jinja2Templates
 
 app_path = Path(__file__).parent
@@ -26,3 +27,8 @@ main_menu = [
     NavItem("Books", "app/books", []),
 ]
 protected_routes = ["/app/books"]
+
+
+jinja_env = Environment(
+    autoescape=True, loader=FileSystemLoader(app_path / "templates")
+)

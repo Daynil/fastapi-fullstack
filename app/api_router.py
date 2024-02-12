@@ -4,7 +4,7 @@ from fastapi import APIRouter, Form
 from starlette.requests import Request
 from starlette.responses import Response
 
-from app.models import RequestAuthed, AlertInfo
+from app.models import AlertInfo, RequestAuthed
 from app.pocketbase.pocketbase_api import PocketbaseAPI
 from app.util.template_helpers import info_banner, page_response
 
@@ -34,7 +34,7 @@ async def books(
     ).data
 
     return page_response(
-        "books/books.html",
+        "books/books.jinja",
         request,
         context={
             "books": [
@@ -66,7 +66,7 @@ async def grab_book(request: RequestAuthed, book_id: str):
     ).data
 
     return page_response(
-        "books/book_list.html",
+        "books/book_list.jinja",
         request,
         context={
             "books": [
@@ -95,7 +95,7 @@ async def delete_book(request: RequestAuthed, book_id: str):
     ).data
 
     return page_response(
-        "books/book_list.html",
+        "books/book_list.jinja",
         request,
         context={
             "books": [
@@ -116,13 +116,13 @@ async def add_book(
 ):
     new_book = PocketbaseAPI.send_request(
         "POST",
-        f"/collections/books/records/",
+        "/collections/books/records/",
         headers={"Authorization": request.user.token},
         json={"title": title, "author": author, "user": request.user.id},
     ).data
 
     return page_response(
-        "books/book.html",
+        "books/book.jinja",
         request,
         context={"book": new_book},
     )
@@ -130,7 +130,7 @@ async def add_book(
 
 @app_router.get("/auth_menu")
 async def auth_menu(request: Request):
-    return page_response("auth_menu.html", request)
+    return page_response("auth_menu.jinja", request)
 
 
 @app_router.post("/login")
@@ -147,8 +147,15 @@ async def login(
         )
     except Exception as e:
         # if e.args[0]["code"] == 400:
+        # return info_banner(
+        #     request,
+        #     AlertInfo(
+        #         type="bad",
+        #         title="Login error",
+        #         message="Please check your information and try again.",
+        #     ),
+        # )
         return info_banner(
-            request,
             AlertInfo(
                 type="bad",
                 title="Login error",

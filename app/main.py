@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI, Request
 from starlette.authentication import (
-    AuthenticationBackend,
     AuthCredentials,
+    AuthenticationBackend,
 )
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.requests import HTTPConnection
@@ -11,10 +11,10 @@ from starlette.staticfiles import StaticFiles
 
 from app import build
 from app.api_router import app_router
-from app.config import protected_routes, generated_path
+from app.config import app_path, generated_path, protected_routes
 from app.models import AppUser
 from app.pocketbase.pocketbase_api import PocketbaseAPI
-from app.util.utilities import cprint, CColors
+from app.util.utilities import CColors, cprint
 
 app = FastAPI(title="fastapi-fullstack")
 
@@ -67,10 +67,20 @@ app.mount(
 
 def start():
     # Can debug with this, but need to run with `uvicorn app.main:app --reload` to get autoreload and colors
-    cprint("Rebuilding...!", CColors.WARNING)
+    cprint("Rebuilding...", CColors.WARNING)
     build.start()
+    # build.start(clean=True)
     cprint("Build complete!", CColors.OKGREEN)
-    uvicorn.run("app.main:app")
+    # Must run uvicorn separately with watchexec
+    # or port doesn't always close properly
+    # uvicorn.run("app.main:app", host="0.0.0.0", port=8000)
+    # uvicorn.run(
+    #     "app.main:app",
+    #     host="0.0.0.0",
+    #     port=8000,
+    #     reload=True,
+    #     reload_dirs=str(app_path),
+    # )
 
 
 if __name__ == "__main__":

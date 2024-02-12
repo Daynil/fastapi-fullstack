@@ -24,29 +24,30 @@ implementation since the same data is generated on each, just in a different for
 
 `app` is the directory with all source files, including jinja2 templates and partials. `app/templates/to_pregenerate` is
 a folder which contains all of my fully static pages, which are built by my build process and, along with all static
-files like css and libraries, are placed in `app/generated`.
+files like css and libraries, are placed in `generated`.
 
-FastAPI mounts the `app/generated` folder to `/`, so all requests for these static files resolve as normal in the
+FastAPI mounts the `generated` folder to `/`, so all requests for these static files resolve as normal in the
 browser. All dynamic routes and api routes are mounted to FastAPI under the `/app/` subdirectory, e.g. `/app/books`.
 These dynamic calls have their templates generated on the server on the fly and returned to the client.
 
-Activate the python environment before running the server with `$ ./ff-env/scripts/activate`. This environment can be
-recreated from the `requirements.txt` file with:
+Activate the python environment before running the server with `$ conda activate ./env` (can use `mamba` for all this as usual). This environment can be recreated from the `requirements.txt` file with:
 
 ```shell
-$ py -3.10 -m venv ff-env
-$ which python
+# While in base project dir
+$ conda create --prefix ./env python=3.11
 $ python -m pip install -r requirements.txt
-$ ./ff-env/scripts/activate
+$ conda activate ./env
 ```
 
-`$ ./dev-build.ps1` starts the pocketbase server, and starts a watcher for my app directory, and on changes, restarts
+Pocketbase automatically applies any unapplied migrations inside `./app/pocketbase/pb_migrations` on serve, so the schema is reflected automatically. Any prior data would need to be brought back in by import.
+
+`$ ./dev-build.sh` starts the pocketbase server, and starts a watcher (using `watchexec`) for my app directory, and on changes, restarts
 both my static build process and the `unicorn` FastAPI server.
 
 ## TODO
 
 Simplify use with pocketbase. Pocketbase provides an awesome UI for admin, provides all needed auth functions, and
-provides database migration.
+provides automatic database migrations.
 
 However, without a js client, I really don't need the sqlite API, I'd rather write raw SQL queries. I need to
 copy `pocketbase-typegen` and introspect python types from the schema. I'll keep it simple and ignore nested queries,
@@ -56,3 +57,7 @@ auto generated ones.
 Need to update `pocketbase_api.py` to use these types and return a simpler api to the db for the rest of the server.
 
 Need to set up `.env` file and ingest it in settings.
+
+Add CLI for faster access to common scripts.
+
+Add hx-boost to body.
