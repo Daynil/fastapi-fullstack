@@ -1,31 +1,33 @@
 {% macro button_spinner(text="Button", loading=false, disabled = false, htmx_loader=true, class="") %}
-    <button type="submit" class="btn spinner-btn {{ class if class else '' }}" {{ 'disabled' if loading or disabled else '' }}>
-        <span>{{ text }}</span>
-        {% if htmx_loader %}
-            <span class="spinner-border spinner-border-sm htmx-indicator" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </span>
-        {% else %}
-            <span class="spinner-border spinner-border-sm {{ 'load-indicator' if loading else 'load-indicator-hidden' }} "
-                  role="status">
-              <span class="visually-hidden">Loading...</span>
-            </span>
-        {% endif %}
-    </button>
- 
-    <style>
-        .spinner-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        .spinner-btn>span:first-child {
-            padding-left: 23px;
-        }
+<button type="submit" class="btn spinner-btn {{ class if class else '' }}" {{ 'disabled' if loading or disabled else '' }}>
+    <span>{{ text }}</span>
+    {% if htmx_loader %}
+        <span class="spinner-border spinner-border-sm htmx-indicator" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </span>
+    {% else %}
+        <span class="spinner-border spinner-border-sm {{ 'load-indicator' if loading else 'load-indicator-hidden' }} "
+              role="status">
+          <span class="visually-hidden">Loading...</span>
+        </span>
+    {% endif %}
+</button>
 
-        .spinner-btn>span:nth-child(2) {
-            margin-left: 10px;
-        }
-    </style>
+<style>
+    .spinner-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .spinner-btn>span:first-child {
+        padding-left: 23px;
+    }
+
+    .spinner-btn>span:nth-child(2) {
+        margin-left: 10px;
+    }
+</style>
+
 {% endmacro %}

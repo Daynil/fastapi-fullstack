@@ -162,28 +162,6 @@ main a:hover {
   color: var(--primary-500);
 }
 
-.book {
-  cursor: pointer;
-  padding: 6px 14px;
-  border-radius: 10px;
-  margin-top: 4px;
-
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.book:hover {
-  background-color: var(--slate-200);
-}
-
-.add-book-form {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 50px;
-  max-width: 400px;
-}
-
 .add-book-inputs {
   display: flex;
   flex-direction: column;
@@ -249,80 +227,6 @@ textarea:focus {
 .htmx-indicator {
   opacity: 0;
   transition: opacity 150ms ease-in;
-}
-
-.alert {
-  display: flex;
-  align-items: start;
-
-  padding: 14px 20px;
-  margin: 10px 0;
-
-  font-size: var(--text-sm);
-  border-radius: 10px;
-}
-
-.alert svg {
-  width: var(--text-2xl);
-  flex-shrink: 0;
-  margin-right: 10px;
-}
-
-.alert h3 {
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-
-.alert-bad {
-  background-color: var(--red-50);
-  color: var(--red-700);
-}
-
-.alert-bad svg {
-  color: var(--red-400);
-}
-
-.alert-bad h3 {
-  color: var(--red-800);
-}
-
-.alert-good {
-  background-color: var(--green-50);
-  color: var(--green-700);
-}
-
-.alert-good svg {
-  color: var(--green-400);
-}
-
-.alert-good h3 {
-  color: var(--green-800);
-}
-
-.alert-alert {
-  background-color: var(--yellow-50);
-  color: var(--yellow-700);
-}
-
-.alert-alert svg {
-  color: var(--yellow-400);
-}
-
-.alert-alert h3 {
-  color: var(--yellow-800);
-}
-
-.alert-info {
-  background-color: var(--primary-50);
-  color: var(--primary-700);
-}
-
-.alert-info svg {
-  color: var(--primary-400);
-}
-
-.alert-info h3 {
-  color: var(--primary-800);
 }
 
 /*** Bootstrap Customizations ***/
@@ -396,6 +300,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   width: 50px;
+  height: 50px;
   margin-right: 120px;
 }
 

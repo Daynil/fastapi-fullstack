@@ -11,7 +11,7 @@ from starlette.staticfiles import StaticFiles
 
 from app import build
 from app.api_router import app_router
-from app.config import app_path, generated_path, protected_routes
+from app.config import app_path, generated_path, jinja_env, protected_routes
 from app.models import AppUser
 from app.pocketbase.pocketbase_api import PocketbaseAPI
 from app.util.utilities import CColors, cprint

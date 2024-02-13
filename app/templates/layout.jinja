@@ -5,17 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {% block head_base %}
-        <link rel='stylesheet' type='text/css' href='{{ base_path_reset or "" }}lib/bootstrap.css' />
-        <script type="text/javascript" src='{{ base_path_reset or "" }}lib/bootstrap.js'></script>
-        <script type="text/javascript" src='{{ base_path_reset or "" }}lib/htmx.min.js'></script>
-        <link rel="stylesheet" type="text/css" href='{{ base_path_reset or "" }}styles.css' />
+          {# use in children to extend: {{ super () }} #}
+          <link rel='stylesheet' type='text/css' href='{{ base_path_reset or "" }}lib/bootstrap.css' />
+          <script type="text/javascript" src='{{ base_path_reset or "" }}lib/bootstrap.js'></script>
+          <script type="text/javascript" src='{{ base_path_reset or "" }}lib/htmx.min.js'></script>
+          <script type="text/javascript" src='{{ base_path_reset or "" }}lib/htmx-response-targets.js'></script>
+          <script type="text/javascript" src='{{ base_path_reset or "" }}global.js'></script>
+          <link rel="stylesheet" type="text/css" href='{{ base_path_reset or "" }}global.css' />
         {% endblock head_base %}
 
         {% block title %}{% endblock title %}
         {% block head %}{% endblock head %}
     </head>
-    <body>
-        {% include 'navbar.jinja' %}
+    <body hx-boost="true">
+        {% block menu %}
+            {% include "navbar.jinja" %}
+        {% endblock menu %}
         {% block content %}{% endblock content %}
     </body>
 </html>

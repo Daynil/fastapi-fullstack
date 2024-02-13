@@ -1,8 +1,9 @@
 <nav class="navbar navbar-expand-xl bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img alt='Books logo' src='{{ base_path_reset or "" }}/logo.svg'>
-            {# <img alt='Books logo' src='/logo.svg'> #}
+            <div style="min-width:50px;">
+              <img alt='Books logo' src='{{ base_path_reset or "" }}/logo.svg'>
+            </div>
             <div>Books</div>
         </a>
         <button
@@ -51,6 +52,10 @@
                 {% endfor %}
             </ul>
             <ul class="navbar-nav mb-2 mb-lg-0 nav-side">
+                {# Statically served pages have no access to the request
+                object. We only get the request object after the load trigger,
+                at which point we return just the auth menu with the request object,
+                which we just swap out the below. #}
                 {% if not request %}
                     <li class="nav-item">
                         <a
@@ -63,6 +68,7 @@
                             Login
                         </a>
                     </li>
+                {# All dynamic pages have direct access to the request object. #}
                 {% else %}
                     {% include "auth_menu.jinja" %}
                 {% endif %}
@@ -70,3 +76,34 @@
         </div>
     </div>
 </nav>
+
+<script>
+/*
+    addLoadListener(highlightActiveNav);
+
+    function highlightActiveNav() {
+        console.log(window.location.pathname)
+        const navItems = document.querySelectorAll(".nav-link");
+        navItems.forEach(e => {
+            if (e.href.endsWith('#')) {
+              return;
+            }
+
+            const path = new URL(e.href).pathname;
+            if (window.location.pathname == path) {
+                console.log(e)
+                e.classList.add("active-nav-link");
+                console.log(e)
+            } else {
+                e.classList.remove("active-nav-link");
+            }
+        });
+    }
+*/
+</script>
+
+<style>
+    .active-nav-link {
+        background-color: var(--slate-200);
+    }
+</style>

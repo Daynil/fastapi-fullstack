@@ -6,7 +6,14 @@ from starlette.responses import Response
 
 from app.models import AlertInfo, RequestAuthed
 from app.pocketbase.pocketbase_api import PocketbaseAPI
-from app.util.template_helpers import info_banner, page_response
+from app.util.template_helpers import (
+    html_block_response,
+    html_macro_response,
+    html_page_response,
+    html_response,
+    info_banner,
+    render_template_macro,
+)
 
 app_router = APIRouter()
 
@@ -33,17 +40,26 @@ async def books(
         headers={"Authorization": request.user.token},
     ).data
 
-    return page_response(
-        "books/books.jinja",
+    return html_page_response(
+        "books/page.jinja",
         request,
-        context={
-            "books": [
-                book for book in all_books["items"] if book["user"] != request.user.id
-            ],
-            "user_books": [
-                book for book in all_books["items"] if book["user"] == request.user.id
-            ],
-        },
+        context={"books": all_books["items"]},
+    )
+
+
+@app_router.get("/books/list")
+async def books_list(
+    request: RequestAuthed,
+):
+    all_books = PocketbaseAPI.send_request(
+        "GET",
+        "/collections/books/records",
+        headers={"Authorization": request.user.token},
+    ).data
+
+    return html_macro_response(
+        "books/book_list.jinja",
+        context={"books": all_books["items"], "user_id": request.user.id},
     )
 
 
@@ -65,17 +81,9 @@ async def grab_book(request: RequestAuthed, book_id: str):
         headers={"Authorization": request.user.token},
     ).data
 
-    return page_response(
+    return html_macro_response(
         "books/book_list.jinja",
-        request,
-        context={
-            "books": [
-                book for book in all_books["items"] if book["user"] != request.user.id
-            ],
-            "user_books": [
-                book for book in all_books["items"] if book["user"] == request.user.id
-            ],
-        },
+        context={"books": all_books["items"], "user_id": request.user.id},
     )
 
 
@@ -94,17 +102,9 @@ async def delete_book(request: RequestAuthed, book_id: str):
         headers={"Authorization": request.user.token},
     ).data
 
-    return page_response(
+    return html_macro_response(
         "books/book_list.jinja",
-        request,
-        context={
-            "books": [
-                book for book in all_books["items"] if book["user"] != request.user.id
-            ],
-            "user_books": [
-                book for book in all_books["items"] if book["user"] == request.user.id
-            ],
-        },
+        context={"books": all_books["items"], "user_id": request.user.id},
     )
 
 
@@ -114,23 +114,38 @@ async def add_book(
     title: Annotated[str, Form()],
     author: Annotated[str, Form()],
 ):
-    new_book = PocketbaseAPI.send_request(
+    # Simulated error
+    if title == "error":
+        alert = AlertInfo(
+            type="bad",
+            title="Test error",
+            message="This error was a test.",
+        )
+        return html_block_response(
+            "books/page.jinja",
+            block_name="add_book_form",
+            request=request,
+            context={"error": alert},
+        )
+
+    _ = PocketbaseAPI.send_request(
         "POST",
         "/collections/books/records/",
         headers={"Authorization": request.user.token},
         json={"title": title, "author": author, "user": request.user.id},
     ).data
 
-    return page_response(
-        "books/book.jinja",
-        request,
-        context={"book": new_book},
+    return html_block_response(
+        "books/page.jinja",
+        block_name="add_book_form",
+        request=request,
+        headers={"HX-Trigger": "newBook"},
     )
 
 
 @app_router.get("/auth_menu")
 async def auth_menu(request: Request):
-    return page_response("auth_menu.jinja", request)
+    return html_page_response("auth_menu.jinja", request)
 
 
 @app_router.post("/login")
@@ -146,15 +161,7 @@ async def login(
             json={"identity": email, "password": password},
         )
     except Exception as e:
-        # if e.args[0]["code"] == 400:
-        # return info_banner(
-        #     request,
-        #     AlertInfo(
-        #         type="bad",
-        #         title="Login error",
-        #         message="Please check your information and try again.",
-        #     ),
-        # )
+        # TODO: different errors depeding on pocketbase response (see rxverisure)
         return info_banner(
             AlertInfo(
                 type="bad",

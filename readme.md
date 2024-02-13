@@ -44,6 +44,44 @@ Pocketbase automatically applies any unapplied migrations inside `./app/pocketba
 `$ ./dev-build.sh` starts the pocketbase server, and starts a watcher (using `watchexec`) for my app directory, and on changes, restarts
 both my static build process and the `unicorn` FastAPI server.
 
+
+## Pearls
+
+### Caching
+
+Be aware of browser caching of the static assets and files. During development, it's best to turn off caching in dev tools (network tab checkbox at the top) so you don't have to worry about whether the issue is due to stale assets. However, keep in mind the cache is only disabled while the devtools are open.
+
+
+### Statically Generated Pages
+
+Keep in mind that the statically generated pages (marketing routes, blog, etc.) do not have access to the request object unless/until they make a call to the server.
+
+This creates a bit of a catch 22 with an "app" style site, where I want to present a header that depends on whether the user is logged in. For static pages, we can make a quick on-load call with HTMX to check logged in status and swap out only auth menu. All dynamic pages will already have access to the request object, so we just serve it directly.
+
+
+### Template Architecture
+
+Since we're using HTMX, we want to be able to swap out small bits of content where needed. 
+
+For dynamic pages, each "page" should have a complete "page" template, which includes the layout and all the content.
+
+Any content which may be swapped out during usage *and is reused multiple times* should get its own component template with a macro.
+
+If the content may be swapped out during usage, but we don't reuse it (e.g. a form like in books/page.jinja), we can use blocks as template fragments. One caveat: any imports used within the block must be imported within the block.
+
+Usually, if there's an error on a page or in a component, in the context we can either pass null error to indicate no error, or the error object. Anywhere in the template that needs to display an error can just check for presence of the error object. The granularity of where the error is passed depends on the context. So if we have a form component within a page, the form submission would post to a route that returns just the form component, which may or may not have an error in the context.
+
+If there's an error on a page where a success is a redirect (e.g. login), we can just use htmx to swap in the error to an id like `#error`.
+
+
+### Updating content outside of the hx-target
+
+[Other Content](https://htmx.org/examples/update-other-content/#events)
+
+This situation comes up often and is hard to grasp at first. Ultimately, Solution #3 with events is my favorite from teh article. We do whatever swap we need to, and if we want to update something else, we just pass down an event from the server, which triggers another request on a different object. See my add book form in `books/page.jinja` and `books/book_list.jinja\`.
+
+
+
 ## TODO
 
 Simplify use with pocketbase. Pocketbase provides an awesome UI for admin, provides all needed auth functions, and
@@ -60,4 +98,7 @@ Need to set up `.env` file and ingest it in settings.
 
 Add CLI for faster access to common scripts.
 
-Add hx-boost to body.
+Differentiate login error by pockebase error response.
+
+Next:
+pocketbase types and interface, as above

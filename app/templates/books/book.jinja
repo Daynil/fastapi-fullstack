@@ -1,19 +1,42 @@
-{% if book.user == request.user.id %}
+{% macro book(book, user_id) %}
+
+{% if book.user == user_id %}
     <div class="book"
-         hx-trigger="click"
-         hx-delete="/app/books/{{ book.id }}"
-         hx-target="#books"
-         hx-swap="outerHTML"
+        hx-trigger="click"
+        hx-delete="/app/books/{{ book.id }}"
+        hx-target="#books"
+        hx-swap="outerHTML"
     >
         {{ book.title }} by {{ book.author }}
     </div>
 {% else %}
     <div class="book"
-         hx-trigger="click"
-         hx-patch="/app/books/{{ book.id }}"
-         hx-target="#books"
-         hx-swap="outerHTML"
+        hx-trigger="click"
+        hx-patch="/app/books/{{ book.id }}"
+        hx-target="#books"
+        hx-swap="outerHTML"
     >
         {{ book.title }} by {{ book.author }}
     </div>
 {% endif %}
+
+<style>
+
+.book {
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 10px;
+  margin-top: 4px;
+
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.book:hover {
+  background-color: var(--slate-200);
+}
+
+</style>
+
+{% endmacro %}

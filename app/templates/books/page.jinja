@@ -1,0 +1,59 @@
+{% extends "layout.jinja" %}
+{% from "books/book_list.jinja" import book_list %}
+{% from "components/button_spinner.jinja" import button_spinner %}
+
+{% block title %}
+    <title>Books</title>
+{% endblock title %}
+
+{% block content %}
+
+<h1>Books</h1>
+<main>
+    <div>
+        <h3>Add Book</h3>
+        {% block add_book_form %}
+          {% from "components/button_spinner.jinja" import button_spinner %}
+          {% from "components/info_banner.jinja" import info_banner %}
+          <form class="add-book-form"
+                hx-post="/app/books"
+                hx-target="this"
+                hx-swap="outerHTML"
+                hx-disabled-elt=".btn">
+              <div class="add-book-inputs">
+                  <div class="form-group">
+                      <label for="title">Title</label>
+                      <input id="title"
+                              name="title"
+                              type="text"
+                              required
+                      />
+                  </div>
+                  <div class="form-group">
+                      <label for="author">Author</label>
+                      <input id="author"
+                              name="author"
+                              type="text"
+                              required
+                      />
+                  </div>
+              </div>
+              {{ button_spinner(text="Add", htmx_loader=true, class="btn-primary") }}
+              <div>{{ info_banner(error) if error else "" }}</div>
+          </form>
+        {% endblock add_book_form %}
+    </div>
+    {{ book_list(books=books, user_id=request.user.id) }}
+</main>
+
+<style>
+
+.add-book-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
+  max-width: 400px;
+}
+
+</style>
+{% endblock content %}
