@@ -102,3 +102,4 @@ Differentiate login error by pockebase error response.
 
 Next:
 pocketbase types and interface, as above
+switch to tailwind, pinesui, and use alpine where needed

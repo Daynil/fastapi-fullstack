@@ -7,12 +7,8 @@ from starlette.responses import Response
 from app.models import AlertInfo, RequestAuthed
 from app.pocketbase.pocketbase_api import PocketbaseAPI
 from app.util.template_helpers import (
-    html_block_response,
-    html_macro_response,
-    html_page_response,
-    html_response,
+    html_template_response,
     info_banner,
-    render_template_macro,
 )
 
 app_router = APIRouter()
@@ -40,7 +36,7 @@ async def books(
         headers={"Authorization": request.user.token},
     ).data
 
-    return html_page_response(
+    return html_template_response(
         "books/page.jinja",
         request,
         context={"books": all_books["items"]},
@@ -57,8 +53,9 @@ async def books_list(
         headers={"Authorization": request.user.token},
     ).data
 
-    return html_macro_response(
+    return html_template_response(
         "books/book_list.jinja",
+        macro_name=".",
         context={"books": all_books["items"], "user_id": request.user.id},
     )
 
@@ -81,8 +78,9 @@ async def grab_book(request: RequestAuthed, book_id: str):
         headers={"Authorization": request.user.token},
     ).data
 
-    return html_macro_response(
+    return html_template_response(
         "books/book_list.jinja",
+        macro_name=".",
         context={"books": all_books["items"], "user_id": request.user.id},
     )
 
@@ -102,8 +100,9 @@ async def delete_book(request: RequestAuthed, book_id: str):
         headers={"Authorization": request.user.token},
     ).data
 
-    return html_macro_response(
+    return html_template_response(
         "books/book_list.jinja",
+        macro_name=".",
         context={"books": all_books["items"], "user_id": request.user.id},
     )
 
@@ -121,7 +120,7 @@ async def add_book(
             title="Test error",
             message="This error was a test.",
         )
-        return html_block_response(
+        return html_template_response(
             "books/page.jinja",
             block_name="add_book_form",
             request=request,
@@ -135,7 +134,7 @@ async def add_book(
         json={"title": title, "author": author, "user": request.user.id},
     ).data
 
-    return html_block_response(
+    return html_template_response(
         "books/page.jinja",
         block_name="add_book_form",
         request=request,
@@ -145,7 +144,7 @@ async def add_book(
 
 @app_router.get("/auth_menu")
 async def auth_menu(request: Request):
-    return html_page_response("auth_menu.jinja", request)
+    return html_template_response("auth_menu.jinja", request)
 
 
 @app_router.post("/login")

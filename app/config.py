@@ -11,7 +11,7 @@ to_generate_path = app_path / "templates" / "to_pregenerate"
 static_path = app_path / "static"
 generated_path = app_path.parent / "generated"
 
-templates = Jinja2Templates(directory=app_path / "templates")
+templates = Jinja2Templates(autoescape=True, directory=app_path / "templates")
 
 
 @dataclass
