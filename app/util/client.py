@@ -396,5 +396,5 @@ class ApiClient:
             return (
                 APIResponse(response=res, data=model(**res.json()))
                 if model
-                else res.json()
+                else APIResponse(response=res, data=res.json())
             )

@@ -101,5 +101,7 @@ Add CLI for faster access to common scripts.
 Differentiate login error by pockebase error response.
 
 Next:
-pocketbase types and interface, as above
+pocketbase auth interface
+pocketbase error handling
+pocketbase expanded fields
 switch to tailwind, pinesui, and use alpine where needed

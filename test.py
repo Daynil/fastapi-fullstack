@@ -1,4 +1,5 @@
 from app.config import jinja_env
+from app.pocketbase.pocketbase_api import introspect_pocketbase_types
 
 
 def test():
@@ -8,4 +9,4 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    introspect_pocketbase_types()

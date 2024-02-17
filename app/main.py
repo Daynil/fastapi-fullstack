@@ -25,10 +25,12 @@ class PocketbaseAuthBackend(AuthenticationBackend):
             return AuthCredentials([]), AppUser()
 
         try:
-            user = PocketbaseAPI.send_request(
-                "POST",
-                "/collections/users/auth-refresh",
-                headers={"Authorization": conn.cookies["token"]},
+            user = (
+                await PocketbaseAPI.send_request_async(
+                    "POST",
+                    "/collections/users/auth-refresh",
+                    headers={"Authorization": conn.cookies["token"]},
+                )
             ).data
         except Exception as e:
             return AuthCredentials([]), AppUser()

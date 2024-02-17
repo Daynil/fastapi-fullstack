@@ -5,7 +5,20 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from app.models import AlertInfo, RequestAuthed
-from app.pocketbase.pocketbase_api import PocketbaseAPI
+from app.pocketbase.generated_types import (
+    Books,
+    BooksCreate,
+    BooksUpdate,
+    Collections,
+    Users,
+)
+from app.pocketbase.pocketbase_api import (
+    PocketbaseAPI,
+    create_record,
+    delete_record,
+    find_records,
+    update_record,
+)
 from app.util.template_helpers import (
     html_template_response,
     info_banner,
@@ -30,16 +43,12 @@ async def books(
     #     json={"identity": "dlibinrx@gmail.com", "password": "adminpass"},
     # )
 
-    all_books = PocketbaseAPI.send_request(
-        "GET",
-        "/collections/books/records",
-        headers={"Authorization": request.user.token},
-    ).data
+    res = await find_records(Collections.books, model=Books, token=request.user.token)
 
     return html_template_response(
         "books/page.jinja",
         request,
-        context={"books": all_books["items"]},
+        context={"books": res.items},
     )
 
 
@@ -47,63 +56,49 @@ async def books(
 async def books_list(
     request: RequestAuthed,
 ):
-    all_books = PocketbaseAPI.send_request(
-        "GET",
-        "/collections/books/records",
-        headers={"Authorization": request.user.token},
-    ).data
+    res = await find_records(Collections.books, model=Books, token=request.user.token)
 
     return html_template_response(
         "books/book_list.jinja",
         macro_name=".",
-        context={"books": all_books["items"], "user_id": request.user.id},
+        context={"books": res.items, "user_id": request.user.id},
     )
 
 
 @app_router.patch("/books/{book_id}")
 async def grab_book(request: RequestAuthed, book_id: str):
     try:
-        _ = PocketbaseAPI.send_request(
-            "PATCH",
-            f"/collections/books/records/{book_id}",
-            headers={"Authorization": request.user.token},
-            json={"user": request.user.id},
-        ).data
+        _ = await update_record(
+            Collections.books,
+            id=book_id,
+            model=Books,
+            updates=BooksUpdate(user=request.user.id),
+        )
+        print(_)
     except Exception as e:
         print(e)
 
-    all_books = PocketbaseAPI.send_request(
-        "GET",
-        "/collections/books/records",
-        headers={"Authorization": request.user.token},
-    ).data
+    res = await find_records(Collections.books, model=Books, token=request.user.token)
 
     return html_template_response(
         "books/book_list.jinja",
         macro_name=".",
-        context={"books": all_books["items"], "user_id": request.user.id},
+        context={"books": res.items, "user_id": request.user.id},
     )
 
 
 @app_router.delete("/books/{book_id}")
 async def delete_book(request: RequestAuthed, book_id: str):
-    _ = PocketbaseAPI.send_request(
-        "PATCH",
-        f"/collections/books/records/{book_id}",
-        headers={"Authorization": request.user.token},
-        json={"user": None},
-    ).data
+    _ = await update_record(
+        Collections.books, id=book_id, updates=BooksUpdate(user=None)
+    )
 
-    all_books = PocketbaseAPI.send_request(
-        "GET",
-        "/collections/books/records",
-        headers={"Authorization": request.user.token},
-    ).data
+    res = await find_records(Collections.books, model=Books, token=request.user.token)
 
     return html_template_response(
         "books/book_list.jinja",
         macro_name=".",
-        context={"books": all_books["items"], "user_id": request.user.id},
+        context={"books": res.items, "user_id": request.user.id},
     )
 
 
@@ -114,6 +109,7 @@ async def add_book(
     author: Annotated[str, Form()],
 ):
     # Simulated error
+    # TODO: make error on duplicate (from pocketbase)
     if title == "error":
         alert = AlertInfo(
             type="bad",
@@ -127,12 +123,9 @@ async def add_book(
             context={"error": alert},
         )
 
-    _ = PocketbaseAPI.send_request(
-        "POST",
-        "/collections/books/records/",
-        headers={"Authorization": request.user.token},
-        json={"title": title, "author": author, "user": request.user.id},
-    ).data
+    _ = await create_record(
+        Collections.books, BooksCreate(title=title, author=author, user=request.user.id)
+    )
 
     return html_template_response(
         "books/page.jinja",
@@ -154,7 +147,7 @@ async def login(
     password: Annotated[str, Form()],
 ):
     try:
-        user = PocketbaseAPI.send_request(
+        user = await PocketbaseAPI.send_request_async(
             "POST",
             "/collections/users/auth-with-password",
             json={"identity": email, "password": password},
