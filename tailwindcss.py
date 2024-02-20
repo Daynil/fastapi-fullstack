@@ -2,12 +2,9 @@ import platform
 import shlex
 import subprocess
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-from urllib import request
 
 import httpx
 import rich.progress
-from rich import print as rprint
 
 
 def run_cmd(command: str | list[str], print_output=True, input=None):
