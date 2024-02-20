@@ -1,0 +1,46 @@
+{% extends "layout.jinja" %}
+{% from "components/button_spinner.jinja" import button_spinner %}
+{% from "components/info_banner.jinja" import info_banner %}
+
+{% block title %}
+    <title>Fastapi Fullstack Signup</title>
+{% endblock title %}
+
+{% block content %}
+    <h1>Sign up</h1>
+    <main>
+        <form class="auth-form" hx-post="/app/signup" 
+        hx-target="#error" hx-swap="innerHTML" hx-disabled-elt=".btn">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input id="email"
+                       name="email"
+                       type="email"
+                       autocomplete="email"
+                       required
+                       class="inpt"
+                />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password"
+                       name="password"
+                       type="password"
+                       required
+                       class="inpt"
+                />
+            </div>
+            <div class="form-group">
+                <label for="password_confirm">Confirm Password</label>
+                <input id="password_confirm"
+                       name="password_confirm"
+                       type="password"
+                       required
+                       class="inpt"
+                />
+            </div>
+            {{ button_spinner(text="Create Account", htmx_loader=true, class="btn-primary") }}
+          <div id="error"></div>
+        </form>
+    </main>
+{% endblock content %}

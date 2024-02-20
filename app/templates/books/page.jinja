@@ -8,10 +8,11 @@
 
 {% block content %}
 
-<h1>Books</h1>
+<h1 class="bg-blue-500 text-gray-400 rounded-xl">Books</h1>
 <main>
-    <div>
-        <h3>Add Book</h3>
+    <div x-data="{count:0}">
+        <h3 x-on:click="count++">Add Book</h3>
+        <p x-text="count"></p>
         {% block add_book_form %}
           {% from "components/button_spinner.jinja" import button_spinner %}
           {% from "components/info_banner.jinja" import info_banner %}

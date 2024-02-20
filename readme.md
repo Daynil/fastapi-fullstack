@@ -84,24 +84,10 @@ This situation comes up often and is hard to grasp at first. Ultimately, Solutio
 
 ## TODO
 
-Simplify use with pocketbase. Pocketbase provides an awesome UI for admin, provides all needed auth functions, and
-provides automatic database migrations.
-
-However, without a js client, I really don't need the sqlite API, I'd rather write raw SQL queries. I need to
-copy `pocketbase-typegen` and introspect python types from the schema. I'll keep it simple and ignore nested queries,
-only auto-generating types for the base collection types. I'll manually create the more complex types by combining the
-auto generated ones.
-
-Need to update `pocketbase_api.py` to use these types and return a simpler api to the db for the rest of the server.
-
 Need to set up `.env` file and ingest it in settings.
+https://github.com/Mateko/FastAPI-boilerplate/blob/main/app/settings/core.py
 
 Add CLI for faster access to common scripts.
 
-Differentiate login error by pockebase error response.
-
 Next:
-pocketbase auth interface
-pocketbase error handling
-pocketbase expanded fields
 switch to tailwind, pinesui, and use alpine where needed

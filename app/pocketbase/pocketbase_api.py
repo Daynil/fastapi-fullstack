@@ -1,8 +1,8 @@
 import json
-from enum import StrEnum
 from typing import Generic, Type, TypeVar
 
 from pydantic import BaseModel
+from rich import print as rprint
 
 from app.config import app_path
 from app.pocketbase.db import Sqlite
@@ -15,12 +15,33 @@ PocketbaseAPI = ApiClient("http://127.0.0.1:8090/api", use_async=True)
 pb_db = Sqlite(app_path / "pocketbase" / "pb_data" / "data.db")
 
 
+class PocketbaseError(Exception):
+    """
+    Raise for errors we know about and have meaningful messages
+    to pass back to callers.
+    """
+
+    code: int
+    message: str
+    data: dict
+
+    def __init__(self, code: int, message: str, data) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+        self.data = data
+
+
 class PaginatedRes(BaseModel, Generic[T]):
     page: int
     perPage: int
     totalItems: int
     totalPages: int
     items: list[T]
+
+
+def parse_error(e: Exception):
+    return PocketbaseError(e.args[0]["code"], e.args[0]["message"], e.args[0]["data"])
 
 
 async def find_records(

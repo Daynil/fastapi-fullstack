@@ -182,5 +182,5 @@ def info_banner(alert: AlertInfo):
       HTML Response, which can be passed directly to the client.
     """
     return html_template_response(
-        "components/info_banner.jinja", context={"alert": alert}
+        "components/info_banner.jinja", macro_name=".", context={"alert": alert}
     )

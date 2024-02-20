@@ -4,7 +4,8 @@ from fastapi import APIRouter, Form
 from starlette.requests import Request
 from starlette.responses import Response
 
-from app.models import AlertInfo, RequestAuthed
+from app.auth import create_user, login_user
+from app.models import AlertInfo, AppError, BooksLocations, RequestAuthed
 from app.pocketbase.generated_types import (
     Books,
     BooksCreate,
@@ -43,7 +44,12 @@ async def books(
     #     json={"identity": "dlibinrx@gmail.com", "password": "adminpass"},
     # )
 
-    res = await find_records(Collections.books, model=Books, token=request.user.token)
+    res = await find_records(
+        Collections.books,
+        model=BooksLocations,
+        token=request.user.token,
+        expand="location",
+    )
 
     return html_template_response(
         "books/page.jinja",
@@ -56,7 +62,9 @@ async def books(
 async def books_list(
     request: RequestAuthed,
 ):
-    res = await find_records(Collections.books, model=Books, token=request.user.token)
+    res = await find_records(
+        Collections.books, model=Books, token=request.user.token, expand="locations"
+    )
 
     return html_template_response(
         "books/book_list.jinja",
@@ -74,7 +82,6 @@ async def grab_book(request: RequestAuthed, book_id: str):
             model=Books,
             updates=BooksUpdate(user=request.user.id),
         )
-        print(_)
     except Exception as e:
         print(e)
 
@@ -147,18 +154,54 @@ async def login(
     password: Annotated[str, Form()],
 ):
     try:
-        user = await PocketbaseAPI.send_request_async(
-            "POST",
-            "/collections/users/auth-with-password",
-            json={"identity": email, "password": password},
-        )
-    except Exception as e:
-        # TODO: different errors depeding on pocketbase response (see rxverisure)
+        user = await login_user(email, password)
+    except AppError as e:
         return info_banner(
             AlertInfo(
                 type="bad",
                 title="Login error",
                 message="Please check your information and try again.",
+            ),
+        )
+    except Exception as e:
+        return info_banner(
+            AlertInfo(
+                type="bad",
+                title="Server error",
+                message="Please try again later.",
+            ),
+        )
+
+    response = Response(headers={"HX-Redirect": "/app/books"}, status_code=200)
+    response.set_cookie(
+        "token", user.data["token"], secure=True, httponly=True, samesite="strict"
+    )
+    return response
+
+
+@app_router.post("/signup")
+async def signup(
+    request: Request,
+    email: Annotated[str, Form()],
+    password: Annotated[str, Form()],
+    password_confirm: Annotated[str, Form()],
+):
+    try:
+        user = await create_user(email, password, password_confirm)
+    except AppError as e:
+        return info_banner(
+            AlertInfo(
+                type="bad",
+                title="Signup error",
+                message=str(e),
+            ),
+        )
+    except Exception as e:
+        return info_banner(
+            AlertInfo(
+                type="bad",
+                title="Server error",
+                message="Please try again later.",
             ),
         )
 
